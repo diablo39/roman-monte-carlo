@@ -1,0 +1,131 @@
+Wiadomości-śmieci
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Monte Carlo Simulation</title>
+  </head>
+  <body>
+    <h1>Monte Carlo Simulation</h1>
+    <p>
+      Enter the number of simulations and experiments, then paste the probability-value table below,
+      and click "Run Simulation" to see the results.
+    </p>
+
+    <label for="numSimulations">Number of features:</label>
+    <input type="number" id="numSimulations" value="150" min="1" /><br /><br />
+
+    <label for="numExperiments">Number of Experiments:</label>
+    <input type="number" id="numExperiments" value="1000" min="1" /><br /><br />
+
+    <label for="probabilityTable">Probability-Value Table:</label><br />
+    <textarea id="probabilityTable" rows="5" cols="30">
+0.1	20
+0.2	10</textarea
+    ><br /><br />
+
+    <button id="runSimulation">Run Simulation</button>
+
+    <h2>Simulation Results:</h2>
+    <div id="results"></div>
+
+    <script>
+      // Monte Carlo simulation script
+      function monteCarloFromProbabilities(probabilityArray, numSimulations) {
+        const simulation = []
+
+        for (let i = 0; i < numSimulations; i++) {
+          const randomValue = Math.random()
+          for (let j = 0; j < probabilityArray.length; j++) {
+            if (randomValue <= probabilityArray[j].probability) {
+              simulation.push(probabilityArray[j].value)
+              break
+            }
+          }
+        }
+        return simulation
+      }
+
+      function calculateAverage(simulation) {
+        const sum = simulation.reduce((acc, value) => acc + value, 0)
+        return sum / simulation.length
+      }
+
+      function calculateSum(simulation) {
+        return simulation.reduce((acc, value) => acc + value, 0)
+      }
+
+      function calculatePercentile(simulation, percentile) {
+        const sortedSimulation = simulation.sort((a, b) => a - b)
+        const index = Math.ceil((percentile / 100) * sortedSimulation.length)
+        return sortedSimulation[index - 1]
+      }
+
+      function parseProbabilityTable(tableText) {
+        const lines = tableText.trim().split('\n')
+        const probabilityArray = []
+
+        for (let i = 0; i < lines.length; i++) {
+          const [probability, value] = lines[i].split('\t').map((item) => item.trim())
+          probabilityArray.push({
+            probability: parseFloat(probability.replace(',', '.')),
+            value: parseFloat(value),
+          })
+        }
+
+        return probabilityArray
+      }
+
+      document.getElementById('runSimulation').addEventListener('click', () => {
+        const numValues = parseInt(document.getElementById('numSimulations').value, 10)
+        const numExperiments = parseInt(document.getElementById('numExperiments').value, 10)
+        const tableText = document.getElementById('probabilityTable').value
+
+        if (isNaN(numValues) || numValues < 1) {
+          alert('Please enter a valid number of simulations.')
+          return
+        }
+
+        if (isNaN(numExperiments) || numExperiments < 1) {
+          alert('Please enter a valid number of experiments.')
+          return
+        }
+
+        let probabilityArray = parseProbabilityTable(tableText)
+        if (probabilityArray.length === 0) {
+          alert('Please provide a valid probability-value table.')
+          return
+        }
+
+        document.getElementById('results').innerHTML = `
+                <p>Working</p>
+            `
+
+        probabilityArray = probabilityArray.sort((a, b) => a.probability - b.probability)
+
+        let simulationsResults = {}
+        for (let i = 0; i < numExperiments; i++) {
+          const values = monteCarloFromProbabilities(probabilityArray, numValues)
+          const average = calculateSum(values)
+
+          if (!simulationsResults[average]) {
+            simulationsResults[average] = 0
+          }
+          simulationsResults[average]++
+        }
+
+        let csvContent = 'data:text/csv;charset=utf-8,'
+        for (let row in simulationsResults) {
+          csvContent += `${row},${simulationsResults[row]}\r\n`
+        }
+
+        var encodedUri = encodeURI(csvContent)
+        window.open(encodedUri)
+        document.getElementById('results').innerHTML = `
+                <p>Done</p>
+            `
+      })
+    </script>
+  </body>
+</html>
