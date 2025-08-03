@@ -17,10 +17,8 @@ export default {
   <v-app>
     <v-navigation-drawer v-model="drawer">
       <v-list>
-        <v-list-item to="/" prepend-icon="mdi-home">Home</v-list-item>
-        <v-list-item to="/monte-carlo" prepend-icon="mdi-simulate"
-          >Monte Carlo Simulation</v-list-item
-        >
+        <v-list-item to="/">Home</v-list-item>
+        <v-list-item to="/monte-carlo">Monte Carlo Simulation</v-list-item>
       </v-list>
     </v-navigation-drawer>
 
