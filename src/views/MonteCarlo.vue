@@ -57,6 +57,7 @@ const percentileStats = computed(() => {
     p25: findPercentileValue(25),
     p50: findPercentileValue(50), // median
     p75: findPercentileValue(75),
+    p85: findPercentileValue(85),
     p90: findPercentileValue(90),
     p95: findPercentileValue(95),
   }
@@ -93,7 +94,10 @@ function parseProbabilityTable(tableText: string): Array<{ probability: number; 
     }
   }
   // Ensure the total probability does not exceed 1
-  const totalProbability = probabilityArray.reduce((sum, item) => sum + item.probability, 0)
+  const totalProbability = probabilityArray.reduce(
+    (sum, item) => (sum * 1000 + item.probability * 1000) / 1000,
+    0,
+  )
   if (totalProbability > 1) {
     throw new Error('Total probability exceeds 1. Please adjust your input.')
   }
@@ -159,7 +163,7 @@ function monteCarloFromProbabilities(
 // }
 
 function calculateSum(simulation: Array<number>) {
-  return simulation.reduce((acc, value) => acc + value, 0)
+  return simulation.reduce((acc, value) => (acc * 1000 + value * 1000) / 1000, 0)
 }
 
 async function runSimulation() {
@@ -336,6 +340,12 @@ async function runSimulation() {
                                     <td>75th</td>
                                     <td>
                                       <strong>{{ percentileStats.p75 }}</strong>
+                                    </td>
+                                  </tr>
+                                  <tr class="bg-orange-lighten-5">
+                                    <td>85th</td>
+                                    <td>
+                                      <strong>{{ percentileStats.p85 }}</strong>
                                     </td>
                                   </tr>
                                   <tr>
