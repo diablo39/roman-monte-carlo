@@ -10,8 +10,9 @@ import {
   CategoryScale,
   LinearScale,
 } from 'chart.js'
+import annotationPlugin from 'chartjs-plugin-annotation'
 
-ChartJS.register(Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale)
+ChartJS.register(Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale, annotationPlugin)
 
 const chartData = ref({
   labels: ['January', 'February', 'March'],
@@ -255,7 +256,6 @@ async function runSimulation() {
   <v-container>
     <v-row>
       <v-col cols="12">
-        <h1>Monte Carlo Simulation</h1>
         <p>
           Enter the number of items and experiments, then paste the probability-value table below,
           and click "Run Simulation" to see the results.
@@ -292,10 +292,10 @@ async function runSimulation() {
         <label for="probabilityTable">Probability-Value Table:</label><br />
         <v-textarea
           id="probabilityTable"
-          rows="5"
+          rows="10"
           cols="30"
           v-model="probabilityTable"
-          label="Enter probability-value pairs (e.g., 0.1 20, 0.2 10)"
+          label="Enter probability-value pairs (e.g., 0.1 20, 0.2 10) as separator use single space or tab. Each value schould be set in new line"
         ></v-textarea>
 
         <v-btn id="runSimulation" color="primary" @click="runSimulation">Run Simulation</v-btn>
@@ -345,7 +345,7 @@ async function runSimulation() {
                                       <strong>{{ percentileStats.p50 }}</strong>
                                     </td>
                                   </tr>
-                                  <tr class="bg-orange-lighten-5">
+                                  <tr>
                                     <td>75th</td>
                                     <td>
                                       <strong>{{ percentileStats.p75 }}</strong>

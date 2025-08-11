@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { RouterView } from 'vue-router'
-import { ref } from 'vue'
+// import { ref } from 'vue'
 
-const drawer = ref(null)
+// const drawer = ref(null)
 </script>
 
 <script lang="ts">
@@ -15,6 +15,11 @@ export default {
 
 <template>
   <v-app>
+    <VAppBar>
+      <template #title>
+        <h1>Monte Carlo Simulator</h1>
+      </template>
+    </VAppBar>
     <!-- <v-navigation-drawer v-model="drawer">
       <v-list>
         <v-list-item to="/">Home</v-list-item>
