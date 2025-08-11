@@ -35,7 +35,13 @@ const chartOptions = ref({
 
 const numSimulations = ref(150)
 const numExperiments = ref(1000)
-const probabilityTable = ref(`0.1\t20\n0.2\t10`)
+const probabilityTable = ref(`0.1\t20
+0.2\t10
+0.1\t20
+0.2\t10
+0.1\t20
+0.2\t10
+0.1\t20`)
 const loadChartData = ref(false)
 const tab = ref(null)
 const results = ref<{ value: number; count: number; probability: number; percentile: number }[]>([])
@@ -70,15 +76,18 @@ function parseProbabilityTable(tableText: string): Array<{ probability: number; 
   // Assuming the input format is "probability\tvalue" for each line.
   // Example input: "0.1\t20\n0.2\t10"
   if (!tableText.trim()) return []
-  if (!tableText.includes('\t')) {
-    throw new Error('Invalid format: Please ensure the table is tab-separated.')
+  if (!tableText.includes('\t') && !tableText.includes(' ')) {
+    throw new Error('Invalid format: Please ensure the table is tab-separated or space separated.')
   }
   const lines = tableText.trim().split('\n')
   if (lines.length === 0) return []
   let probabilityArray: Array<{ probability: number; value: number }> = []
 
   for (let i = 0; i < lines.length; i++) {
-    const [probability, value] = lines[i].split('\t').map((item: string) => item.trim())
+    const [probability, value] = lines[i]
+      .replace(' ', '\t')
+      .split('\t')
+      .map((item: string) => item.trim())
     probabilityArray.push({
       probability: parseFloat(probability.replace(',', '.')),
       value: parseFloat(value),

@@ -15,12 +15,12 @@ export default {
 
 <template>
   <v-app>
-    <v-navigation-drawer v-model="drawer">
+    <!-- <v-navigation-drawer v-model="drawer">
       <v-list>
         <v-list-item to="/">Home</v-list-item>
         <v-list-item to="/monte-carlo">Monte Carlo Simulation</v-list-item>
       </v-list>
-    </v-navigation-drawer>
+    </v-navigation-drawer> -->
 
     <v-main>
       <RouterView />
