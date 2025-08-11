@@ -31,6 +31,30 @@ const chartOptions = ref({
       display: true,
       text: 'Monte Carlo Simulation Results',
     },
+    annotation: {
+      annotations: {
+        line1: {
+          type: 'line' as const,
+          mode: 'vertical' as const,
+          scaleID: 'x',
+          value: 0, // This will be updated dynamically
+          borderColor: 'red',
+          borderWidth: 5,
+          borderDash: [5, 5],
+          label: {
+            enabled: true,
+            content: '85th Percentile',
+            position: 'center' as const,
+          },
+        },
+      },
+    },
+  },
+  scales: {
+    x: {
+      type: 'linear' as const,
+      position: 'bottom' as const,
+    },
   },
 })
 
@@ -215,28 +239,12 @@ async function runSimulation() {
     simulationsResults[sum]++
   }
 
-  // Update chart data
-  loadChartData.value = false
-  await nextTick()
-
-  chartData.value.labels = Object.keys(simulationsResults).map(String)
-  chartData.value.datasets[0].data = Object.values(simulationsResults)
-
-  loadChartData.value = true
-
-  let resultSum = 0
-  Object.entries(simulationsResults).forEach(([, value]) => {
-    resultSum += value
-  })
-  console.log('Total simulations:', resultSum)
-  console.log('Simulation results:', simulationsResults)
-
   // Create results array and sort by value
   const sortedResults = Object.entries(simulationsResults)
     .map(([value, count]) => ({
       value: parseInt(value),
       count: count,
-      probability: count / resultSum,
+      probability: count / numExperiments.value,
       percentile: 0,
     }))
     .sort((a, b) => a.value - b.value)
@@ -245,10 +253,25 @@ async function runSimulation() {
   let cumulativeCount = 0
   for (const result of sortedResults) {
     cumulativeCount += result.count
-    result.percentile = (cumulativeCount / resultSum) * 100
+    result.percentile = (cumulativeCount / numExperiments.value) * 100
   }
 
   results.value = sortedResults
+
+  // Update chart data
+  loadChartData.value = false
+  await nextTick()
+
+  chartData.value.labels = Object.keys(simulationsResults)
+  chartData.value.datasets[0].data = Object.values(simulationsResults)
+
+  // Update the 85th percentile line position
+  const p85Value = findPercentileValue(85)
+  if (p85Value !== null) {
+    chartOptions.value.plugins.annotation.annotations.line1.value = p85Value
+  }
+
+  loadChartData.value = true
 }
 </script>
 
@@ -441,6 +464,12 @@ async function runSimulation() {
 
               <v-tabs-window-item value="two">
                 <v-container>
+                  <v-row>
+                    <v-col cols="12"
+                      ><span style="font-weight: 500; color: red">Red line</span> - 85
+                      percentile</v-col
+                    >
+                  </v-row>
                   <v-row>
                     <v-col cols="12">
                       <Bar
