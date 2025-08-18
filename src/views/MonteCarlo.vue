@@ -75,9 +75,17 @@ const results = ref<{ value: number; count: number; probability: number; percent
 function findPercentileValue(targetPercentile: number): number | null {
   if (results.value.length === 0) return null
 
-  // Find the first result where percentile >= target percentile
-  const result = results.value.find((item) => item.percentile >= targetPercentile)
-  return result ? result.value : null
+  // Find the last result where percentile >= target percentile using for statement
+  let lastResult: { value: number; count: number; probability: number; percentile: number } | null =
+    null
+  for (const item of results.value) {
+    if (item.percentile >= targetPercentile) {
+      lastResult = item
+    } else {
+      break
+    }
+  }
+  return lastResult ? lastResult.value : null
 }
 
 // Computed property for common percentiles
@@ -256,6 +264,9 @@ async function runSimulation() {
     result.percentile = (cumulativeCount / numExperiments.value) * 100
   }
 
+  for (const result of sortedResults) {
+    result.percentile = 100 - result.percentile
+  }
   results.value = sortedResults
 
   // Update chart data
