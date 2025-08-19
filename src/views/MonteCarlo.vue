@@ -38,7 +38,7 @@ const chartOptions = ref({
           mode: 'vertical' as const,
           scaleID: 'x',
           value: 0, // This will be updated dynamically
-          borderColor: 'red',
+          borderColor: 'green',
           borderWidth: 5,
           borderDash: [5, 5],
           label: {
@@ -137,7 +137,7 @@ function parseProbabilityTable(tableText: string): Array<{ probability: number; 
   }
   // Ensure the total probability does not exceed 1
   const totalProbability = probabilityArray.reduce(
-    (sum, item) => (sum * 1000 + item.probability * 1000) / 1000,
+    (sum, item) => (sum * 1000000 + item.probability * 1000000) / 1000000,
     0,
   )
   if (totalProbability > 1) {
@@ -205,7 +205,7 @@ function monteCarloFromProbabilities(
 // }
 
 function calculateSum(simulation: Array<number>) {
-  return simulation.reduce((acc, value) => (acc * 1000 + value * 1000) / 1000, 0)
+  return simulation.reduce((acc, value) => (acc * 1000000 + value * 1000000) / 1000000, 0)
 }
 
 async function runSimulation() {
@@ -225,7 +225,8 @@ async function runSimulation() {
       })
     } else {
       const previousProbability = growingProbabilityArray[i - 1].probability
-      const probabilitySum = (previousProbability * 10000 + currentProbability * 10000) / 10000
+      const probabilitySum =
+        (previousProbability * 1000000 + currentProbability * 1000000) / 1000000
       growingProbabilityArray.push({
         probability: probabilitySum,
         value: currentValue,
@@ -477,7 +478,7 @@ async function runSimulation() {
                 <v-container>
                   <v-row>
                     <v-col cols="12"
-                      ><span style="font-weight: 500; color: red">Red line</span> - 85
+                      ><span style="font-weight: 500; color: green">Green line</span> - 85
                       percentile</v-col
                     >
                   </v-row>
